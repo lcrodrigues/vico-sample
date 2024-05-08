@@ -64,7 +64,7 @@ fun VicoChart() {
                     guideline = null,
                     itemPlacer = bottomAxisItemPlacer
                 ),
-//                marker = rememberMarker(),
+                marker = rememberMarker(),
                 runInitialAnimation = false,
                 horizontalLayout = HorizontalLayout.fullWidth(),
                 isZoomEnabled = false,
