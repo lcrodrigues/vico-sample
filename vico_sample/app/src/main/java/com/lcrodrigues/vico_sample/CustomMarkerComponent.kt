@@ -40,8 +40,8 @@ open class CustomMarkerComponent(
         chartValuesProvider: ChartValuesProvider,
     ): Unit = with(context) {
         drawGuideline(context, bounds, markedEntries)
-        val halfIndicatorSize = indicatorSizeDp.half.pixels
 
+        val halfIndicatorSize = indicatorSizeDp.half.pixels
         markedEntries.forEachIndexed { _, model ->
             onApplyEntryColor?.invoke(model.color)
             indicator?.draw(
@@ -52,7 +52,8 @@ open class CustomMarkerComponent(
                 model.location.y + halfIndicatorSize,
             )
         }
-        drawLabel(context, bounds, markedEntries, chartValuesProvider.getChartValues())
+
+        drawLabel(context, bounds, markedEntries, chartValuesProvider.getChartValues(), halfIndicatorSize)
     }
 
     private fun drawLabel(
@@ -60,20 +61,22 @@ open class CustomMarkerComponent(
         bounds: RectF,
         markedEntries: List<Marker.EntryModel>,
         chartValues: ChartValues,
+        halfIndicatorSize: Float
     ): Unit = with(context) {
+        labelFormatter = CustomMarkerLabelFormatter()
         val text = labelFormatter.getLabel(markedEntries, chartValues)
         val entryX = markedEntries.averageOf { it.location.x }
         val labelBounds =
             label.getTextBounds(context = context, text = text, width = bounds.width().toInt(), outRect = tempBounds)
         val halfOfTextWidth = labelBounds.width().half
-        val x = overrideXPositionToFit(entryX, bounds, halfOfTextWidth)
+        val x = overrideXPositionToFit(entryX, bounds, halfOfTextWidth, halfIndicatorSize)
         this[MarkerCorneredShape.tickXKey] = entryX
 
         label.drawText(
             context = context,
             text = text,
             textX = x,
-            textY = bounds.top - labelBounds.height() - label.tickSizeDp.pixels,
+            textY = bounds.top,
             verticalPosition = VerticalPosition.Bottom,
             maxTextWidth = minOf(bounds.right - x, x - bounds.left).doubled.ceil.toInt(),
         )
@@ -83,10 +86,14 @@ open class CustomMarkerComponent(
         xPosition: Float,
         bounds: RectF,
         halfOfTextWidth: Float,
-    ): Float = when {
-        xPosition - halfOfTextWidth < bounds.left -> bounds.left + halfOfTextWidth
-        xPosition + halfOfTextWidth > bounds.right -> bounds.right - halfOfTextWidth
-        else -> xPosition
+        halfIndicatorSize: Float
+    ): Float {
+        val endLimit = bounds.right * 0.8
+
+        return when {
+            xPosition + halfOfTextWidth > endLimit -> (xPosition - halfIndicatorSize) - halfOfTextWidth
+            else -> (xPosition + halfIndicatorSize) + halfOfTextWidth
+        }
     }
 
     private fun drawGuideline(
