@@ -1,4 +1,4 @@
-package com.lcrodrigues.vico_sample
+package com.lcrodrigues.vico_sample.ui.components.marker
 
 import android.graphics.Typeface
 import android.text.Spannable
