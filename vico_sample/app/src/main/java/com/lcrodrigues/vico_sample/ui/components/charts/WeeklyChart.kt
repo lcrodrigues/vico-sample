@@ -11,6 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lcrodrigues.vico_sample.getDaysOfWeek
+import com.lcrodrigues.vico_sample.getFormattedCurrency
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.lcrodrigues.vico_sample.ui.components.marker.rememberMarker
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
@@ -25,19 +28,16 @@ import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import java.text.NumberFormat
-import java.util.Locale
 
-val currencyFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+val formattedDaysOfWeek = getDaysOfWeek(1)
 
-private val daysOfWeek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
 private val bottomAxisValueFormatter =
-    AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> daysOfWeek[x.toInt() % daysOfWeek.size] }
+    AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> formattedDaysOfWeek[x.toInt() % formattedDaysOfWeek.size].second }
 
 private val startAxisValueFormatter =
     AxisValueFormatter<AxisPosition.Vertical.Start> { value, chartValues ->
         if (value == chartValues.maxY) {
-            "CA ${currencyFormat.format(value.toDouble())}"
+            getFormattedCurrency(value)
         } else {
             String.format("%.2f", value)
         }
@@ -71,7 +71,7 @@ fun WeeklyChart(producer: ChartEntryModelProducer) {
                     itemPlacer = bottomAxisItemPlacer,
                     valueFormatter = bottomAxisValueFormatter
                 ),
-                marker = rememberMarker(),
+                marker = rememberMarker(ChartType.WEEKLY),
                 runInitialAnimation = false,
                 horizontalLayout = HorizontalLayout.fullWidth(),
                 isZoomEnabled = false,

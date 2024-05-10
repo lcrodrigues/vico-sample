@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.patrykandpatrick.vico.compose.component.lineComponent
 import com.patrykandpatrick.vico.compose.component.overlayingComponent
 import com.patrykandpatrick.vico.compose.component.shapeComponent
@@ -17,7 +18,7 @@ import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.marker.Marker
 
 @Composable
-internal fun rememberMarker(): Marker {
+internal fun rememberMarker(chartType: ChartType): Marker {
     val labelBackgroundColor = Color(0xFF2A7C00)
     val labelBackground = remember(labelBackgroundColor) {
         ShapeComponent(labelBackgroundShape, labelBackgroundColor.toArgb())
@@ -51,7 +52,7 @@ internal fun rememberMarker(): Marker {
     )
 
     return remember(label, indicator, guideline) {
-        object : CustomMarkerComponent(label, indicator, guideline) {
+        object : CustomMarkerComponent(chartType, label, indicator, guideline) {
             init {
                 indicatorSizeDp = INDICATOR_SIZE_DP
                 onApplyEntryColor = { _ ->
@@ -63,6 +64,7 @@ internal fun rememberMarker(): Marker {
         }
     }
 }
+
 private const val LABEL_LINE_COUNT = 2
 private const val INDICATOR_SIZE_DP = 28f
 

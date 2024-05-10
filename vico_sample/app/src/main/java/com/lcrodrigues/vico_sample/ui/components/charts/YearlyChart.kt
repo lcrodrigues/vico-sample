@@ -11,6 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lcrodrigues.vico_sample.getFormattedCurrency
+import com.lcrodrigues.vico_sample.monthsOfYear
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.lcrodrigues.vico_sample.ui.components.marker.rememberMarker
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
@@ -28,7 +31,6 @@ import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 
 private const val SPACING = 2
 
-private val monthsOfYear = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 private val bottomAxisValueFormatter =
     AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> monthsOfYear[x.toInt()] }
 
@@ -40,7 +42,7 @@ private val bottomAxisItemPlacer = AxisItemPlacer.Horizontal.default(
 private val startAxisValueFormatter =
     AxisValueFormatter<AxisPosition.Vertical.Start> { value, chartValues ->
         if (value == chartValues.maxY) {
-            "CA ${currencyFormat.format(value.toDouble())}"
+            getFormattedCurrency(value)
         } else {
             String.format("%.2f", value)
         }
@@ -70,7 +72,7 @@ fun YearlyChart(producer: ChartEntryModelProducer) {
                     itemPlacer = bottomAxisItemPlacer,
                     valueFormatter = bottomAxisValueFormatter
                 ),
-                marker = rememberMarker(),
+                marker = rememberMarker(ChartType.YEARLY),
                 runInitialAnimation = false,
                 horizontalLayout = HorizontalLayout.fullWidth(),
                 isZoomEnabled = false,

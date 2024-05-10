@@ -1,6 +1,7 @@
 package com.lcrodrigues.vico_sample.ui.components.marker
 
 import android.graphics.RectF
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.patrykandpatrick.vico.core.chart.dimensions.HorizontalDimensions
 import com.patrykandpatrick.vico.core.chart.insets.Insets
 import com.patrykandpatrick.vico.core.chart.values.ChartValues
@@ -21,6 +22,7 @@ import com.patrykandpatrick.vico.core.extension.orZero
 import com.patrykandpatrick.vico.core.marker.Marker
 
 open class CustomMarkerComponent(
+    private val chartType: ChartType,
     label: TextComponent,
     indicator: Component?,
     guideline: LineComponent?
@@ -63,7 +65,7 @@ open class CustomMarkerComponent(
         chartValues: ChartValues,
         halfIndicatorSize: Float
     ): Unit = with(context) {
-        labelFormatter = CustomMarkerLabelFormatter()
+        labelFormatter = CustomMarkerLabelFormatter(chartType)
         val text = labelFormatter.getLabel(markedEntries, chartValues)
         val entryX = markedEntries.averageOf { it.location.x }
         val labelBounds =

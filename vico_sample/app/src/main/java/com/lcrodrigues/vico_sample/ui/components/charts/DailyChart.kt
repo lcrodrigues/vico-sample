@@ -11,6 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lcrodrigues.vico_sample.getFormattedCurrency
+import com.lcrodrigues.vico_sample.hoursOfDay
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.lcrodrigues.vico_sample.ui.components.marker.rememberMarker
 import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
@@ -27,17 +30,14 @@ import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 
-// Day -> Entire day
-val hoursOfDay = Array(24) { i -> "%02d:00".format(i) }
-
 private const val BOTTOM_AXIS_ITEM_SPACING = 5
 
 private val startAxisValueFormatter =
     AxisValueFormatter<AxisPosition.Vertical.Start> { value, chartValues ->
         if (value == chartValues.maxY) {
-            currencyFormat.format(value.toDouble())
+            getFormattedCurrency(value)
         } else {
-            String.format("%.1f", value)
+            String.format("%.2f", value)
         }
     }
 
@@ -76,7 +76,7 @@ fun DailyChart(producer: ChartEntryModelProducer) {
                     valueFormatter = bottomAxisValueFormatter,
                     label = axisLabelComponent(horizontalPadding = 0.dp)
                 ),
-                marker = rememberMarker(),
+                marker = rememberMarker(ChartType.DAILY),
                 runInitialAnimation = false,
                 horizontalLayout = HorizontalLayout.fullWidth(),
                 isZoomEnabled = false,

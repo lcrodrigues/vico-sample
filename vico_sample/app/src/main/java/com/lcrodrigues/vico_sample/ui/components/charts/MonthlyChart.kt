@@ -11,6 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lcrodrigues.vico_sample.getFormattedCurrency
+import com.lcrodrigues.vico_sample.getWeeksInMonth
+import com.lcrodrigues.vico_sample.types.ChartType
 import com.lcrodrigues.vico_sample.ui.components.marker.rememberMarker
 import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
@@ -26,42 +29,8 @@ import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import java.time.LocalDate
 import java.time.Month
 import java.time.Year
-import java.time.format.DateTimeFormatter
-
-fun getWeeksInMonth(month: Int, year: Int): Array<String> {
-    val firstDayOfMonth = LocalDate.of(year, month, 1)
-    val lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1)
-    val firstWeekFormatter = DateTimeFormatter.ofPattern("MMM d")
-    val formatter = DateTimeFormatter.ofPattern("d")
-
-    val weeks = mutableListOf<String>()
-    var startOfWeek = firstDayOfMonth
-
-    while (startOfWeek.isBefore(lastDayOfMonth)) {
-        val endOfWeek = if (startOfWeek.plusDays(6).isBefore(lastDayOfMonth))
-            startOfWeek.plusDays(6)
-        else
-            lastDayOfMonth
-
-        val weekString = "${
-            if (startOfWeek == firstDayOfMonth) {
-                startOfWeek.format(firstWeekFormatter)
-            } else {
-                startOfWeek.format(
-                    formatter
-                )
-            }
-        }-${endOfWeek.format(formatter)}"
-        weeks.add(weekString)
-
-        startOfWeek = endOfWeek.plusDays(1)
-    }
-
-    return weeks.toTypedArray()
-}
 
 val xValues = getWeeksInMonth(Month.JANUARY.value, Year.now().value)
 
@@ -71,7 +40,7 @@ private val bottomAxisValueFormatter =
 private val startAxisValueFormatter =
     AxisValueFormatter<AxisPosition.Vertical.Start> { value, chartValues ->
         if (value == chartValues.maxY) {
-            "CA ${currencyFormat.format(value.toDouble())}"
+            getFormattedCurrency(value)
         } else {
             String.format("%.2f", value)
         }
@@ -98,8 +67,7 @@ fun MonthlyChart(producer: ChartEntryModelProducer) {
                 chartModelProducer = producer,
                 startAxis = rememberStartAxis(
                     valueFormatter = startAxisValueFormatter,
-                    itemPlacer = AxisItemPlacer.Vertical.default(3),
-//                    label = axisLabelComponent(horizontalPadding = 0.dp)
+                    itemPlacer = AxisItemPlacer.Vertical.default(3)
                 ),
                 bottomAxis = rememberBottomAxis(
                     guideline = null,
@@ -107,7 +75,7 @@ fun MonthlyChart(producer: ChartEntryModelProducer) {
                     valueFormatter = bottomAxisValueFormatter,
                     label = axisLabelComponent(horizontalPadding = 0.dp)
                 ),
-                marker = rememberMarker(),
+                marker = rememberMarker(ChartType.MONTHLY),
                 runInitialAnimation = false,
                 horizontalLayout = HorizontalLayout.fullWidth(),
                 isZoomEnabled = false,
